@@ -10,16 +10,6 @@ import {
 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-interface ILiquoriceSettlement {
-    function BALANCE_MANAGER() external view returns (address);
-    function AUTHENTICATOR() external view returns (address);
-}
-
-interface IAllowListAuthentication {
-    function addSolver(address _solver) external;
-    function addMaker(address _maker) external;
-}
-
 /// @title LiquoriceExecutor
 /// @notice Executor for Liquorice RFQ (Request for Quote) swaps
 /// @dev Handles RFQ swaps through Liquorice settlement contracts with support for

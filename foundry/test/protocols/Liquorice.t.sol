@@ -11,6 +11,16 @@ import {
     SafeERC20
 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+interface ILiquoriceSettlement {
+    function BALANCE_MANAGER() external view returns (address);
+    function AUTHENTICATOR() external view returns (address);
+}
+
+interface IAllowListAuthentication {
+    function addSolver(address _solver) external;
+    function addMaker(address _maker) external;
+}
+
 contract LiquoriceExecutorExposed is LiquoriceExecutor {
     constructor(
         address _liquoriceSettlement,
