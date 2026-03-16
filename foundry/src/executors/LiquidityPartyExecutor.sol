@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.33;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.26;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IExecutor} from "../../interfaces/IExecutor.sol";
 import {RestrictTransferFrom} from "../RestrictTransferFrom.sol";
-import {Initializable} from "../../lib/solady/src/utils/Initializable.sol";
 
 contract LiquidityPartyExecutor is IExecutor, RestrictTransferFrom {
     constructor(address _permit2) RestrictTransferFrom(_permit2) {}
