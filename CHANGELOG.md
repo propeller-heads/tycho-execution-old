@@ -1,3 +1,10 @@
+## [0.165.1](https://github.com/propeller-heads/tycho-execution/compare/0.165.0...0.165.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* Fix cargo audit ([bce8e56](https://github.com/propeller-heads/tycho-execution/commit/bce8e5644a25fce2496eab088783f47e51ce9021))
+
 ## [0.165.0](https://github.com/propeller-heads/tycho-execution/compare/0.164.0...0.165.0) (2026-03-04)
 
 

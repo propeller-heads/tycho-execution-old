@@ -51,7 +51,7 @@ impl ProtocolSim for MockRFQState {
         _delta: ProtocolStateDelta,
         _tokens: &HashMap<Bytes, Token>,
         _balances: &Balances,
-    ) -> Result<(), TransitionError<String>> {
+    ) -> Result<(), TransitionError> {
         panic!("MockRFQState does not implement fee")
     }
 
