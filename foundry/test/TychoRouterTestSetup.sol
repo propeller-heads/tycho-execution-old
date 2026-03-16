@@ -21,7 +21,9 @@ import {SlipstreamsExecutor} from "../src/executors/SlipstreamsExecutor.sol";
 import {RocketpoolExecutor} from "../src/executors/RocketpoolExecutor.sol";
 import {ERC4626Executor} from "../src/executors/ERC4626Executor.sol";
 import {EtherfiExecutor} from "../src/executors/EtherfiExecutor.sol";
-import {LiquidityPartyExecutor} from "../src/executors/LiquidityPartyExecutor.sol";
+import {
+    LiquidityPartyExecutor
+} from "../src/executors/LiquidityPartyExecutor.sol";
 
 // Test utilities and mocks
 import "./Constants.sol";
