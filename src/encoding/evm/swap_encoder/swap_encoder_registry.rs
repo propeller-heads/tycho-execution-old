@@ -11,10 +11,10 @@ use crate::encoding::{
             bebop::BebopSwapEncoder, curve::CurveSwapEncoder, ekubo::EkuboSwapEncoder,
             ekubo_v3::EkuboV3SwapEncoder, erc_4626::ERC4626SwapEncoder,
             etherfi::EtherfiSwapEncoder, fluid_v1::FluidV1SwapEncoder,
-            hashflow::HashflowSwapEncoder, maverick_v2::MaverickV2SwapEncoder,
-            rocketpool::RocketpoolSwapEncoder, slipstreams::SlipstreamsSwapEncoder,
-            uniswap_v2::UniswapV2SwapEncoder, uniswap_v3::UniswapV3SwapEncoder,
-            uniswap_v4::UniswapV4SwapEncoder,
+            hashflow::HashflowSwapEncoder, liquidity_party::LiquidityPartySwapEncoder,
+            maverick_v2::MaverickV2SwapEncoder, rocketpool::RocketpoolSwapEncoder,
+            slipstreams::SlipstreamsSwapEncoder, uniswap_v2::UniswapV2SwapEncoder,
+            uniswap_v3::UniswapV3SwapEncoder, uniswap_v4::UniswapV4SwapEncoder,
         },
     },
     swap_encoder::SwapEncoder,
@@ -153,6 +153,9 @@ impl SwapEncoderRegistry {
             }
             "etherfi" => {
                 Ok(Box::new(EtherfiSwapEncoder::new(executor_address, self.chain, config)?))
+            }
+            "vm:liquidityparty" => {
+                Ok(Box::new(LiquidityPartySwapEncoder::new(executor_address, self.chain, config)?))
             }
             _ => Err(EncodingError::FatalError(format!(
                 "Unknown protocol system: {}",

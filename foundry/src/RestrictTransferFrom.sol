@@ -47,10 +47,11 @@ contract RestrictTransferFrom {
         permit2 = IAllowanceTransfer(_permit2);
     }
 
+    // Hex enum values are also listed here, because they are used in test cases that check swap encodings.
     enum TransferType {
-        TransferFrom,
-        Transfer,
-        None
+        TransferFrom, // uint8(0x00)
+        Transfer, // uint8(0x01)
+        None // uint8(0x02)
     }
 
     /**
