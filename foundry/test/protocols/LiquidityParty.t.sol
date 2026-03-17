@@ -52,7 +52,8 @@ contract LiquidityPartyExecutorTest is Constants, TestUtils {
     uint8 constant PEPE_INDEX = 8;
     uint8 constant SHIB_INDEX = 9;
 
-    address constant WSOL_ADDR = address(0xD31a59c85aE9D8edEFeC411D448f90841571b89c);
+    address constant WSOL_ADDR =
+        address(0xD31a59c85aE9D8edEFeC411D448f90841571b89c);
 
     // Mock pool address for decode testing
     address constant MOCK_POOL =
@@ -223,7 +224,8 @@ contract LiquidityPartyExecutorTest is Constants, TestUtils {
         liquidityPartyExposed.swap(amountIn, protocolData);
 
         // This receiver address must match the encoding in liquidity_party.rs test_encode_liquidityparty()
-        uint256 finalBalance = IERC20(WSOL_ADDR).balanceOf(address(0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e));
+        uint256 finalBalance = IERC20(WSOL_ADDR)
+            .balanceOf(address(0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e));
         assertGe(finalBalance, amountOut);
     }
 
