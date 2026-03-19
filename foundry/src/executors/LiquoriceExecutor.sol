@@ -78,7 +78,6 @@ contract LiquoriceExecutor is IExecutor, RestrictTransferFrom {
             givenAmount, originalBaseTokenAmount, minBaseTokenAmount
         );
 
-        // Transfer tokens to executor
         _transfer(address(this), transferType, tokenIn, givenAmount);
 
         // Modify the fill amount in the calldata if partial fill is supported

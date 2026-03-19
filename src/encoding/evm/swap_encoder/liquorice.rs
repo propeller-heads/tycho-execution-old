@@ -43,22 +43,20 @@ impl SwapEncoder for LiquoriceSwapEncoder {
         _chain: Chain,
         config: Option<HashMap<String, String>>,
     ) -> Result<Self, EncodingError> {
-        let config = config.ok_or(EncodingError::FatalError(
-            "Missing liquorice specific addresses in config".to_string(),
-        ))?;
         let balance_manager_address = config
             .get("balance_manager_address")
-            .map(|s| {
+            .ok_or_else(|| {
+                EncodingError::FatalError(
+                    "Missing liquorice balance manager address in config".to_string(),
+                )
+            })
+            .and_then(|s| {
                 Bytes::from_str(s).map_err(|_| {
                     EncodingError::FatalError(
                         "Invalid liquorice balance manager address".to_string(),
                     )
                 })
-            })
-            .ok_or(EncodingError::FatalError(
-                "Missing liquorice balance manager address in config".to_string(),
-            ))
-            .flatten()?;
+            })?;
 
         let (runtime_handle, runtime) = get_runtime()?;
         Ok(Self { executor_address, balance_manager_address, runtime_handle, runtime })
