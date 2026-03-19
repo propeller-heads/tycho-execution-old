@@ -43,6 +43,9 @@ impl SwapEncoder for LiquoriceSwapEncoder {
         _chain: Chain,
         config: Option<HashMap<String, String>>,
     ) -> Result<Self, EncodingError> {
+        let config = config.ok_or(EncodingError::FatalError(
+            "Missing liquorice specific addresses in config".to_string(),
+        ))?;
         let balance_manager_address = config
             .get("balance_manager_address")
             .ok_or_else(|| {
