@@ -156,6 +156,11 @@ contract Constants is Test, BaseConstants {
     // Hashflow Router
     address HASHFLOW_ROUTER = 0x55084eE0fEf03f14a305cd24286359A35D735151;
 
+    // Liquorice Settlement
+    address LIQUORICE_SETTLEMENT = 0x0448633eb8B0A42EfED924C42069E0DcF08fb552;
+    address LIQUORICE_BALANCE_MANAGER =
+        0xb87bAE43a665EB5943A5642F81B26666bC9E5C95;
+
     // Pool Code Init Hashes
     bytes32 USV2_POOL_CODE_INIT_HASH =
         0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f;

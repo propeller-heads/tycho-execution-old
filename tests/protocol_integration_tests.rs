@@ -1715,3 +1715,197 @@ fn test_sequential_encoding_strategy_etherfi_wrap_eeth() {
         hex_calldata.as_str(),
     );
 }
+
+#[test]
+fn test_single_encoding_strategy_liquorice_settle_single() {
+    // Note: This test generates calldata for the TychoRouterForLiquoriceTest Solidity integration
+    // test.
+    //
+    // Performs a swap from USDC to WETH using Liquorice RFQ settleSingleOrder
+    // Uses real calldata captured at block 24,392,845
+    //
+    //   USDC ───(Liquorice RFQ)──> WETH
+    let user = Bytes::from_str("0xd2068e04cf586f76eece7ba5beb779d7bb1474a1").unwrap();
+
+    let usdc = usdc();
+    let weth = weth();
+
+    // 3000 USDC -> 1 WETH via Liquorice RFQ
+    let quote_amount_out = BigUint::from_str("1000000000000000000").unwrap(); // 1 WETH
+
+    // Real calldata for Liquorice settleSingleOrder (selector 0x9935c868)
+    // Captured from testSettleSingle() in Liquorice.t.sol at block 24,392,845
+    let liquorice_calldata = Bytes::from(
+        hex::decode("9935c86800000000000000000000000006465bceeaef280bb7340a58d75dfc5e1f68705800000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000b2d05e00000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d2068e04cf586f76eece7ba5beb779d7bb1474a10000000000000000000000006bc529dc7b81a031828ddce2bc419d01ff268c66000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000b2d05e000000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000006985036700000000000000000000000006465bceeaef280bb7340a58d75dfc5e1f6870580000000000000000000000000000000000000000000000000000000000000001310000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000419ab2af25941edb594c4c33388649c35f7bbc545ce0a745f9e6272c0ea0e8b2517939f2747b980419ca5f22129742f65755464928ac9592aff9d16ac4446b18df1c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000")
+            .unwrap(),
+    );
+
+    let liquorice_state = MockRFQState {
+        quote_amount_out,
+        quote_data: HashMap::from([
+            ("calldata".to_string(), liquorice_calldata),
+            (
+                "base_token_amount".to_string(),
+                Bytes::from(
+                    biguint_to_u256(&BigUint::from(3000000000_u64))
+                        .to_be_bytes::<32>()
+                        .to_vec(),
+                ),
+            ),
+            (
+                "partial_fill_offset".to_string(),
+                Bytes::from(vec![96u8]), // offset = 96 for settleSingleOrder
+            ),
+            (
+                "min_base_token_amount".to_string(),
+                Bytes::from(
+                    biguint_to_u256(&BigUint::from(3000000000_u64))
+                        .to_be_bytes::<32>()
+                        .to_vec(),
+                ),
+            ),
+        ]),
+    };
+
+    let liquorice_component = ProtocolComponent {
+        id: String::from("liquorice-rfq"),
+        protocol_system: String::from("rfq:liquorice"),
+        ..Default::default()
+    };
+
+    let swap_usdc_weth = Swap::new(liquorice_component, usdc.clone(), weth.clone())
+        .estimated_amount_in(BigUint::from_str("3000000000").unwrap())
+        .protocol_state(Arc::new(liquorice_state));
+
+    let encoder = get_tycho_router_encoder(UserTransferType::TransferFrom);
+
+    let solution = Solution {
+        exact_out: false,
+        given_token: usdc,
+        given_amount: BigUint::from_str("3000000000").unwrap(),
+        checked_token: weth,
+        checked_amount: BigUint::from_str("1000000000000000000").unwrap(),
+        sender: user.clone(),
+        receiver: user,
+        swaps: vec![swap_usdc_weth],
+        ..Default::default()
+    };
+
+    let encoded_solution = encoder
+        .encode_solutions(vec![solution.clone()])
+        .unwrap()[0]
+        .clone();
+
+    let calldata = encode_tycho_router_call(
+        eth_chain().id(),
+        encoded_solution,
+        &solution,
+        &UserTransferType::TransferFrom,
+        &eth(),
+        None,
+    )
+    .unwrap()
+    .data;
+
+    let hex_calldata = encode(&calldata);
+    write_calldata_to_file(
+        "test_single_encoding_strategy_liquorice_settle_single",
+        hex_calldata.as_str(),
+    );
+}
+
+#[test]
+fn test_single_encoding_strategy_liquorice_settle() {
+    // Note: This test generates calldata for the TychoRouterForLiquoriceTest Solidity integration
+    // test.
+    //
+    // Performs a swap from USDC to WETH using Liquorice RFQ settle
+    // Uses real calldata captured at block 24,392,845
+    //
+    //   USDC ───(Liquorice RFQ)──> WETH
+
+    let user = Bytes::from_str("0xd2068e04cf586f76eece7ba5beb779d7bb1474a1").unwrap();
+
+    let usdc = usdc();
+    let weth = weth();
+
+    // 3000 USDC -> 1 WETH via Liquorice RFQ
+    let quote_amount_out = BigUint::from_str("1000000000000000000").unwrap(); // 1 WETH
+
+    // Real calldata for Liquorice settle (selector 0xcba673a7)
+    // Captured from testSettle() in Liquorice.t.sol at block 24,392,845
+    let liquorice_calldata = Bytes::from(
+        hex::decode("cba673a700000000000000000000000006465bceeaef280bb7340a58d75dfc5e1f68705800000000000000000000000000000000000000000000000000000000b2d05e0000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000038000000000000000000000000000000000000000000000000000000000000003a0000000000000000000000000000000000000000000000000000000000000042000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000448633eb8b0a42efed924c42069e0dcf08fb552000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000002600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d2068e04cf586f76eece7ba5beb779d7bb1474a10000000000000000000000006bc529dc7b81a031828ddce2bc419d01ff268c66000000000000000000000000000000000000000000000000000000006985036700000000000000000000000006465bceeaef280bb7340a58d75dfc5e1f6870580000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000b2d05e0000000000000000000000000000000000000000000000000000000000b2d05e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000131000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000416e4084d38e2d4e334057a124ce1ed667947b4fe6a0b44d6cbd62baa5dd384ff93eba5c03f8ea1f4fec128c1c76ce49eb1aad71f053adf3a4d860ef9fe973374d1b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000")
+            .unwrap(),
+    );
+
+    let liquorice_state = MockRFQState {
+        quote_amount_out,
+        quote_data: HashMap::from([
+            ("calldata".to_string(), liquorice_calldata),
+            (
+                "base_token_amount".to_string(),
+                Bytes::from(
+                    biguint_to_u256(&BigUint::from(3000000000_u64))
+                        .to_be_bytes::<32>()
+                        .to_vec(),
+                ),
+            ),
+            (
+                "partial_fill_offset".to_string(),
+                Bytes::from(vec![32u8]), // offset = 32 for settle
+            ),
+            (
+                "min_base_token_amount".to_string(),
+                Bytes::from(
+                    biguint_to_u256(&BigUint::from(3000000000_u64))
+                        .to_be_bytes::<32>()
+                        .to_vec(),
+                ),
+            ),
+        ]),
+    };
+
+    let liquorice_component = ProtocolComponent {
+        id: String::from("liquorice-rfq"),
+        protocol_system: String::from("rfq:liquorice"),
+        ..Default::default()
+    };
+
+    let swap_usdc_weth = Swap::new(liquorice_component, usdc.clone(), weth.clone())
+        .estimated_amount_in(BigUint::from_str("3000000000").unwrap())
+        .protocol_state(Arc::new(liquorice_state));
+
+    let encoder = get_tycho_router_encoder(UserTransferType::TransferFrom);
+
+    let solution = Solution {
+        exact_out: false,
+        given_token: usdc,
+        given_amount: BigUint::from_str("3000000000").unwrap(),
+        checked_token: weth,
+        checked_amount: BigUint::from_str("1000000000000000000").unwrap(),
+        sender: user.clone(),
+        receiver: user,
+        swaps: vec![swap_usdc_weth],
+        ..Default::default()
+    };
+
+    let encoded_solution = encoder
+        .encode_solutions(vec![solution.clone()])
+        .unwrap()[0]
+        .clone();
+
+    let calldata = encode_tycho_router_call(
+        eth_chain().id(),
+        encoded_solution,
+        &solution,
+        &UserTransferType::TransferFrom,
+        &eth(),
+        None,
+    )
+    .unwrap()
+    .data;
+
+    let hex_calldata = encode(&calldata);
+    write_calldata_to_file("test_single_encoding_strategy_liquorice_settle", hex_calldata.as_str());
+}

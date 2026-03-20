@@ -16,6 +16,9 @@
     "rfq:hashflow": {
       "hashflow_router_address": "0x55084eE0fEf03f14a305cd24286359A35D735151"
     },
+    "rfq:liquorice": {
+      "balance_manager_address": "0xb87bAE43a665EB5943A5642F81B26666bC9E5C95"
+    },
     "etherfi": {
       "eeth_address": "0x35fA164735182de50811E8e2E824cFb9B6118ac2",
       "weeth_address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
