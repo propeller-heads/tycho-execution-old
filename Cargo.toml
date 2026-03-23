@@ -50,7 +50,7 @@ typetag = { version = "0.2", optional = true }
 
 [dev-dependencies]
 rstest = "0.24.0"
-tycho-execution = { path = "../tycho-execution", features = ["test-utils"] }
+tycho-execution = { path = ".", features = ["test-utils"] }
 
 [features]
 default = ["evm"]
