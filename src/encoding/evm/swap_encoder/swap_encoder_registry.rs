@@ -109,7 +109,8 @@ impl SwapEncoderRegistry {
             "uniswap_v3" => {
                 Ok(Box::new(UniswapV3SwapEncoder::new(executor_address, self.chain, config)?))
             }
-            "pancakeswap_v3" => {
+            // Stock Uniswap V3 forks with identical swap encoding and callback pattern.
+            "pancakeswap_v3" | "alienbase_v3" => {
                 Ok(Box::new(UniswapV3SwapEncoder::new(executor_address, self.chain, config)?))
             }
             "uniswap_v4" => {
